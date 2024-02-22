@@ -1,4 +1,5 @@
-from cards import *
+import game
 
-
+table = game.Game()
+table.simulte()
 

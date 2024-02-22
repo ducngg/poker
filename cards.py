@@ -78,6 +78,9 @@ class Card:
         if (card['value'] not in Card.ACCEPTED_VALUE) or (card['type'] not in Card.ACCEPTED_TYPE):
             raise ValueError("Invalid card value or type")
         return Card.v2v(card['value']) + Card.t2t(card['type'])
+    @staticmethod 
+    def cs2ss(cards):
+        return list(map(Card.c2s, cards))
     
     @staticmethod 
     def Card(value, type):
@@ -118,15 +121,25 @@ class Card:
                 return 0
     
     @staticmethod
-    def greater(a, b):
-        if Card.compare(a, b) == 1:
+    def greater(card1, card2):
+        if Card.compare(card1, card2) == 1:
             return True
         else:
             return False
         
+    @staticmethod
+    def card_by_card_compare(cards1, cards2):
+        for card1, card2 in list(zip(Card.sort(cards1), Card.sort(cards2)))[::-1]:
+            if Card.compare(card1, card2) == 1:
+                return 1
+            elif Card.compare(card1, card2) == -1:
+                return -1
+        return 0        
+
 class Deck:
     def __init__(self) -> None:
         self.deck = Card.shuffle()
-    def pop(self):
-        return self.deck.pop()
-
+    def draw(self, n_cards=1):
+        cards = self.deck[:n_cards]
+        self.deck = self.deck[n_cards:]
+        return cards

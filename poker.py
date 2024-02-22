@@ -9,36 +9,10 @@ class Poker:
         
     )
     """
+        
     @staticmethod
-    def flush(cards):
-        
-        t = cards[0]['type']
-        if all([card['type'] == t for card in cards]):
-            return cards, []
-        else:
-            return [], cards
-    
-    @staticmethod
-    def straight(cards):
-        
-        # 10 J Q K A
-        if cards[0]['value'] == 10 and cards[4]['value'] == Card.A:
-            for i in range(0, 3):
-                if cards[i]['value'] + 1 != cards[i+1]['value']:
-                    return [], cards
-            return cards, []
-        # 2 3 4 5 A
-        if cards[0]['value'] == 2 and cards[4]['value'] == Card.A:
-            for i in range(0, 3):
-                if cards[i]['value'] + 1 != cards[i+1]['value']:
-                    return [], cards
-            return cards, []
-        
-        else:
-            for i in range(4):
-                if cards[i]['value'] + 1 != cards[i+1]['value']:
-                    return [], cards
-            return cards, []
+    def highest(cards):
+        return [Card.highest(cards)], Card.remaining(cards, [Card.highest(cards)])
     
     @staticmethod
     def onepair(cards):
@@ -103,6 +77,44 @@ class Poker:
         return [], cards
     
     @staticmethod
+    def straight(cards):
+        
+        # 10 J Q K A
+        if cards[0]['value'] == 10 and cards[4]['value'] == Card.A:
+            for i in range(0, 3):
+                if cards[i]['value'] + 1 != cards[i+1]['value']:
+                    return [], cards
+            return cards, []
+        # 2 3 4 5 A
+        if cards[0]['value'] == 2 and cards[4]['value'] == Card.A:
+            for i in range(0, 3):
+                if cards[i]['value'] + 1 != cards[i+1]['value']:
+                    return [], cards
+            return cards, []
+        
+        else:
+            for i in range(4):
+                if cards[i]['value'] + 1 != cards[i+1]['value']:
+                    return [], cards
+            return cards, []
+    
+    @staticmethod
+    def flush(cards):
+        
+        t = cards[0]['type']
+        if all([card['type'] == t for card in cards]):
+            return cards, []
+        else:
+            return [], cards
+        
+    @staticmethod
+    def fullhouse(cards):
+        if Poker.triple(cards)[0] and Poker.twopairs(cards)[0]:
+            return cards, []
+        else:
+            return [], cards
+    
+    @staticmethod
     def quadruple(cards):
         
         counter = {}
@@ -115,22 +127,25 @@ class Poker:
                 return cards_of_quadruple, Card.remaining(cards, cards_of_quadruple)
             
         return [], cards
-    
+
     @staticmethod
-    def fullhouse(cards):
-        if Poker.triple(cards)[0] and Poker.twopairs(cards)[0]:
+    def straightflush(cards):
+        if Poker.straight(cards)[0] and Poker.flush(cards)[0]:
             return cards, []
         else:
             return [], cards
     
     @staticmethod
-    def highest(cards):
-        return [Card.highest(cards)], Card.remaining(cards, [Card.highest(cards)])
+    def royalflush(cards):
+        if Poker.straight(cards)[0] and Poker.flush(cards)[0] and cards[0]['value'] == 10:
+            return cards, []
+        else:
+            return [], cards
 
     @staticmethod
     def check(cards):
         """
-        Using above functions to check the cards, returns (code, [highest cards]) with code is the id of the highest set.
+        Using above functions to check the cards, returns (code, [highest cards]) with code is the id of the highest combination.
         code:
         1: highest card
         2: one pair
@@ -140,6 +155,8 @@ class Poker:
         6: flush
         7: fullhouse
         8: four of a kind
+        9: straight flush
+        10: royal flush
         """
         checkers = [
             Poker.highest, 
@@ -148,11 +165,73 @@ class Poker:
             Poker.triple, 
             Poker.straight, 
             Poker.flush, 
-            Poker.quadruple]
+            Poker.fullhouse, 
+            Poker.quadruple,
+            Poker.straightflush,
+            Poker.royalflush
+        ]
         
-        
+        cards = Card.sort(cards)
+                
+        for checker, code in zip(checkers, range(1, len(checkers)+1)):
+            in_cards, out_cards = checker(cards)
+            if in_cards:
+                final_code = code
+                final_in_cards = in_cards
+                final_out_cards = out_cards
+                
+        return final_in_cards, final_out_cards, final_code
     
     @staticmethod
     def compare(hand1, hand2):
-        pass
+        """
+        Compare two hands of poker.
+
+        This function compares two hands, each consisting of 5 cards.
+
+        In the context of poker, a "combination" refers to a specific hand combination. 
+        There are various types of combinations (see `Poker.check()` for details).
+
+        Returns:
+        - Result = 3 if the combination type of `hand1` is better than `hand2`.
+        - Result = 2 if both hands have the same combination type, but the cards in `hand1` are better.
+        - Result = 1 if both hands have the same combination type and cards, but the remaining cards in `hand1` are better.
+        - Result = 0 if both hands are identical.
+
+        Returns a tuple containing the result and additional information about the hands:
+        (`result`, ([code1, in1, out1], [code2, in2, out2]))
+        - `result`: The result of the comparison (as described above).
+        - `code1`, `in1`, `out1`: Combination type code, cards inside the combination, and remaining cards for `hand1`.
+        - `code2`, `in2`, `out2`: Combination type code, cards inside the combination, and remaining cards for `hand2`.
+        
+        The combination type codes and their meanings can be found in the `Poker.check()` function.
+        """
+
+        in1, out1, code1 = Poker.check(hand1)
+        in2, out2, code2 = Poker.check(hand2)
+        
+        # Level 3 winning: combination type is better
+        if code1 > code2:
+            return 3, ([code1, in1, out1], [code2, in2, out2])
+        elif code1 < code2:
+            return -3, ([code1, in1, out1], [code2, in2, out2])
+        else:
+            # Level 2 winning: combination type is the same, cards in combination type are better
+            '''
+            Currently compare card by card.
+            Working on implementing comparing method for each combination.
+            '''
+            if Card.card_by_card_compare(in1, in2) == 1:
+                return 1, ([code1, in1, out1], [code2, in2, out2])
+            elif Card.card_by_card_compare(in1, in2) == -1:
+                return -1, ([code1, in1, out1], [code2, in2, out2])
+            else:
+                # Level 1 winning: combination type is the same, highest card in combination type is the same, remaining cards is better
+                if Card.card_by_card_compare(out1, out2) == 1:
+                    return 1, ([code1, in1, out1], [code2, in2, out2])
+                elif Card.card_by_card_compare(out1, out2) == -1:
+                    return -1, ([code1, in1, out1], [code2, in2, out2])
+                else:
+                    return 0, ([code1, in1, out1], [code2, in2, out2])
+    
     
