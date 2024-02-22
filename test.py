@@ -9,6 +9,8 @@ import onepair
 import twopairs
 import triple
 import quadruple
+import highest
+import fullhouse
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
@@ -27,6 +29,10 @@ if __name__ == '__main__':
         testSuite = triple.TestTriple
     elif sys.argv[1] in ['quadruple', 'quad', 'fourofakind']:
         testSuite = quadruple.TestQuadruple
+    elif sys.argv[1] in ['highest', 'one']:
+        testSuite = highest.TestHighest
+    elif sys.argv[1] in ['fullhouse']:
+        testSuite = fullhouse.TestFullhouse
          
     else:
         print("No suite detected")

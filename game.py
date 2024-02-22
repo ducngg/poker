@@ -117,8 +117,15 @@ class Poker:
         return [], cards
     
     @staticmethod
+    def fullhouse(cards):
+        if Poker.triple(cards)[0] and Poker.twopairs(cards)[0]:
+            return cards, []
+        else:
+            return [], cards
+    
+    @staticmethod
     def highest(cards):
-        return True, Card.highest(cards)
+        return [Card.highest(cards)], Card.remaining(cards, [Card.highest(cards)])
 
     @staticmethod
     def check(cards):
@@ -129,9 +136,25 @@ class Poker:
         2: one pair
         3: two pairs
         4: three of a kind
-        5: 
+        5: straight
+        6: flush
+        7: fullhouse
+        8: four of a kind
         """
+        checkers = [
+            Poker.highest, 
+            Poker.onepair, 
+            Poker.twopairs, 
+            Poker.triple, 
+            Poker.straight, 
+            Poker.flush, 
+            Poker.quadruple]
+        
+        
     
+    @staticmethod
+    def compare(hand1, hand2):
+        pass
     
         
         
