@@ -27,9 +27,8 @@ class TestOnePair(unittest.TestCase):
         for i in range(N):
             cards = Card.sort(random_onepair())
             
-            # Select highest
             counter = {}
-            double_values = set()       
+            double_values = set()
             for card in cards:
                 counter[card['value']] = counter.get(card['value'], 0) + 1
             
@@ -37,18 +36,23 @@ class TestOnePair(unittest.TestCase):
                 if occurrences == 2:
                     double_values.add(value)
             
-            cards_of_double = list(filter(lambda card: card['value'] in double_values, cards))
-            highest = Card.highest(cards_of_double)
-            # End select highest
+            double_values = list(double_values)
+            if Card.A in double_values:
+                highest_pair_value = Card.A
+            else:
+                highest_pair_value = max(double_values)
+            
+            cards_of_double = list(filter(lambda card: card['value'] == highest_pair_value, cards))
+            in_out = cards_of_double, Card.remaining(cards, cards_of_double)
             # print(list(map(Card.c2s, cards)))
             # print(Card.c2s(highest))
             
             test_method = TestOnePair.gen_test(
                 None, 
                 Poker.onepair(cards), 
-                (True, [highest])
+                in_out
             )
             setattr(TestOnePair, f'test_case_{i}', test_method)
         
 
-TestOnePair.gen(None, 100)
+TestOnePair.gen(None, 1000)

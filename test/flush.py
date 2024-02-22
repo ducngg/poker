@@ -17,13 +17,16 @@ class TestFlush(unittest.TestCase):
     def gen(self, N=100):        
         for i in range(N):
             cards = Card.sort(random_flush())
-            highest = Card.highest(cards)
+            in_out = cards, []
+            
+            # print(in_out)
+            
             test_method = TestFlush.gen_test(
                 None, 
                 Poker.flush(cards), 
-                (True, [highest])
+                in_out
             )
             setattr(TestFlush, f'test_case_{i}', test_method)
         
 
-TestFlush.gen(None, 3000)
+TestFlush.gen(None, 1000)

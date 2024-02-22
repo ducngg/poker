@@ -30,7 +30,7 @@ class TestTwoPairs(unittest.TestCase):
     def gen(self, N=100):        
         for i in range(N):
             cards = Card.sort(random_twopairs())
-            # Select highest
+            
             counter = {}
             double_values = set()
             for card in cards:
@@ -45,14 +45,17 @@ class TestTwoPairs(unittest.TestCase):
             cards_of_first_pair = list(filter(lambda card: card['value'] in double_values and card['value'] == double_values[0], cards))
             cards_of_second_pair = list(filter(lambda card: card['value'] in double_values and card['value'] == double_values[1], cards))
 
-            highests = [Card.sort([Card.highest(cards_of_first_pair), Card.highest(cards_of_second_pair)])]
+            cards_of_two_pairs = Card.sort(cards_of_first_pair + cards_of_second_pair)
+            
+            in_out = cards_of_two_pairs, Card.remaining(cards, cards_of_two_pairs)
+    
             # End select highest
-            print(list(map(Card.c2s, cards)))
-            print(list(map(Card.c2s, highests)))
+            # print(list(map(Card.c2s, cards)))
+            # print(list(map(Card.c2s, highests)))
             test_method = TestTwoPairs.gen_test(
                 None, 
-                Poker.onepair(cards), 
-                (True, highests)
+                Poker.twopairs(cards), 
+                in_out
             )
             setattr(TestTwoPairs, f'test_case_{i}', test_method)
         

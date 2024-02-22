@@ -87,16 +87,43 @@ class Card:
 
     @staticmethod 
     def sort(cards):
-        return sorted(cards, key=lambda card: (card['value'], card['type']))
+        sorted_cards = sorted(cards, key=lambda card: (card['value'], card['type']))
+        aces = list(filter(lambda card: card['value'] == Card.A, sorted_cards))
+        return Card.remaining(sorted_cards, aces) + aces
+    
+    @staticmethod
+    def remaining(cards, takeout):
+        remaining_cards = []
+        for card in cards:
+            if card not in takeout:
+                remaining_cards.append(card)
+        return remaining_cards
     
     @staticmethod 
     def highest(cards):
-        sorted_cards = Card.sort(cards)
-        aces = list(filter(lambda card: card['value'] == Card.A, sorted_cards))
-        if len(aces) > 0:
-            return aces[-1]
+        return Card.sort(cards)[-1]
+    
+    @staticmethod
+    def compare(a, b):
+        if a['value'] > b['value'] or a['value'] == Card.A and b['value'] != Card.A:
+            return 1
+        elif a['value'] < b['value'] or a['value'] != Card.A and b['value'] == Card.A:
+            return -1
         else:
-            return sorted_cards[-1]
+            if a['type'] > b['type']:
+                return 1
+            elif a['type'] < b['type']:
+                return -1
+            else:
+                return 0
+    
+    @staticmethod
+    def greater(a, b):
+        if Card.compare(a, b) == 1:
+            return True
+        else:
+            return False
+        
 class Deck:
     def __init__(self) -> None:
         self.deck = Card.shuffle()

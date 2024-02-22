@@ -20,18 +20,16 @@ class TestStraight(unittest.TestCase):
     def gen(self, N=100):        
         for i in range(N):
             cards = Card.sort(random_straight())
+            in_out = cards, []
             
-            # A 2 3 4 5
-            if cards[0]['value'] == Card.A and cards[-1]['value'] == 5:
-                highest = cards[-1]
-            else: 
-                highest = Card.highest(cards)
+            # print(in_out)
+            
             test_method = TestStraight.gen_test(
                 None, 
                 Poker.straight(cards), 
-                (True, [highest])
+                in_out
             )
             setattr(TestStraight, f'test_case_{i}', test_method)
         
 
-TestStraight.gen(None, 3000)
+TestStraight.gen(None, 1000)
