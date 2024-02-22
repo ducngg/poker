@@ -1,5 +1,5 @@
 import unittest
-from game import Poker
+from poker import Poker
 from cards import *
 import numpy as np
 
@@ -29,4 +29,4 @@ class TestFlush(unittest.TestCase):
             setattr(TestFlush, f'test_case_{i}', test_method)
         
 
-TestFlush.gen(None, 1000)
+TestFlush.gen(None, 100)

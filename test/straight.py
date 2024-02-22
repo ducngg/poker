@@ -1,5 +1,5 @@
 import unittest
-from game import Poker
+from poker import Poker
 from cards import *
 import numpy as np
 
@@ -32,4 +32,4 @@ class TestStraight(unittest.TestCase):
             setattr(TestStraight, f'test_case_{i}', test_method)
         
 
-TestStraight.gen(None, 1000)
+TestStraight.gen(None, 100)

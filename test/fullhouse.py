@@ -1,5 +1,5 @@
 import unittest
-from game import Poker
+from poker import Poker
 from cards import *
 import numpy as np
 
@@ -46,7 +46,7 @@ class TestFullhouse(unittest.TestCase):
             else:
                 in_out = [], cards
             
-            print(in_out)
+            # print(in_out)
                             
             test_method = TestFullhouse.gen_test(
                 None, 
@@ -56,4 +56,4 @@ class TestFullhouse(unittest.TestCase):
             setattr(TestFullhouse, f'test_case_{i}', test_method)
         
 
-TestFullhouse.gen(None, 10)
+TestFullhouse.gen(None, 100)

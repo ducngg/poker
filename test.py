@@ -16,6 +16,17 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         print("Usage: python test.py TEST_CLASS")
         sys.exit()
+        
+    testSuites = [
+        highest.TestHighest,
+        onepair.TestOnePair, 
+        twopairs.TestTwoPairs, 
+        triple.TestTriple, 
+        straight.TestStraight, 
+        flush.TestFlush, 
+        fullhouse.TestFullhouse,
+        quadruple.TestQuadruple
+    ]
     
     if sys.argv[1] in ['flush', 'Flush']:
         testSuite = flush.TestFlush
@@ -33,7 +44,15 @@ if __name__ == '__main__':
         testSuite = highest.TestHighest
     elif sys.argv[1] in ['fullhouse']:
         testSuite = fullhouse.TestFullhouse
-         
+        
+    elif sys.argv[1] == 'all':
+        loader = unittest.TestLoader()
+        suite = unittest.TestSuite()
+        for testSuite in testSuites:
+            suite.addTests(loader.loadTestsFromTestCase(testSuite))
+            
+        unittest.TextTestRunner(verbosity=2).run(suite)
+        sys.exit()
     else:
         print("No suite detected")
         print("Usage: python test.py TEST_CLASS")

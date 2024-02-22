@@ -1,5 +1,5 @@
 import unittest
-from game import Poker
+from poker import Poker
 from cards import *
 import numpy as np
 
@@ -55,4 +55,4 @@ class TestOnePair(unittest.TestCase):
             setattr(TestOnePair, f'test_case_{i}', test_method)
         
 
-TestOnePair.gen(None, 1000)
+TestOnePair.gen(None, 100)

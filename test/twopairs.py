@@ -1,5 +1,5 @@
 import unittest
-from game import Poker
+from poker import Poker
 from cards import *
 import numpy as np
 
