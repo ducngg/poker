@@ -11,6 +11,8 @@ import triple
 import quadruple
 import highest
 import fullhouse
+import straightflush
+import royalflush
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
@@ -25,7 +27,9 @@ if __name__ == '__main__':
         straight.TestStraight, 
         flush.TestFlush, 
         fullhouse.TestFullhouse,
-        quadruple.TestQuadruple
+        quadruple.TestQuadruple,
+        straightflush.TestStraightFlush,
+        royalflush.TestRoyalFlush
     ]
     
     if sys.argv[1] in ['flush', 'Flush']:
@@ -44,6 +48,10 @@ if __name__ == '__main__':
         testSuite = highest.TestHighest
     elif sys.argv[1] in ['fullhouse']:
         testSuite = fullhouse.TestFullhouse
+    elif sys.argv[1] in ['straightflush']:
+        testSuite = straightflush.TestStraightFlush
+    elif sys.argv[1] in ['royalflush']:
+        testSuite = royalflush.TestRoyalFlush
         
     elif sys.argv[1] == 'all':
         loader = unittest.TestLoader()

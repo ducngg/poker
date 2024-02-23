@@ -6,13 +6,13 @@ import numpy as np
 def random_fullhouse():
     values = np.random.choice(Card.ACCEPTED_VALUE, size=2, replace=False)
     types = np.random.choice(Card.ACCEPTED_TYPE, size=2)
-    cards = [{'value': int(value), 'type': int(type)} for value, type in zip(values, types)]
+    cards = [Card.Card(int(value), int(type)) for value, type in zip(values, types)]
     
     card_chosen_for_triple = cards[0]
     
     other_two_cards = [
-        {'value': card_chosen_for_triple['value'], 'type': card_chosen_for_triple['type']},
-        {'value': card_chosen_for_triple['value'], 'type': card_chosen_for_triple['type']}
+        Card.Card(card_chosen_for_triple['value'], card_chosen_for_triple['type']),
+        Card.Card(card_chosen_for_triple['value'], card_chosen_for_triple['type'])
     ]
     
     while other_two_cards[0]['type'] == card_chosen_for_triple['type']:

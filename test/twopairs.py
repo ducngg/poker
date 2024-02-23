@@ -6,15 +6,15 @@ import numpy as np
 def random_twopairs():
     values = np.random.choice(Card.ACCEPTED_VALUE, size=3, replace=False)
     types = np.random.choice(Card.ACCEPTED_TYPE, size=3)
-    cards = [{'value': int(value), 'type': int(type)} for value, type in zip(values, types)]
+    cards = [Card.Card(int(value), int(type)) for value, type in zip(values, types)]
     
     cards_chosen = np.random.choice(cards, size=2, replace=False)
     
-    first_card_pair = {'value': cards_chosen[0]['value'], 'type': cards_chosen[0]['type']}
+    first_card_pair = Card.Card(cards_chosen[0]['value'], cards_chosen[0]['type'])
     while first_card_pair['type'] == cards_chosen[0]['type']:
         first_card_pair['type'] = np.random.choice(Card.ACCEPTED_TYPE)
         
-    second_card_pair = {'value': cards_chosen[1]['value'], 'type': cards_chosen[1]['type']}
+    second_card_pair = Card.Card(cards_chosen[1]['value'], cards_chosen[1]['type'])
     while second_card_pair['type'] == cards_chosen[1]['type']:
         second_card_pair['type'] = np.random.choice(Card.ACCEPTED_TYPE)
         

@@ -6,7 +6,7 @@ import numpy as np
 def random_onepair():
     values = np.random.choice(Card.ACCEPTED_VALUE, size=4, replace=False)
     types = np.random.choice(Card.ACCEPTED_TYPE, size=4)
-    cards = [{'value': int(value), 'type': int(type)} for value, type in zip(values, types)]
+    cards = [Card.Card(int(value), int(type)) for value, type in zip(values, types)]
     
     card_chosen = np.random.choice(cards)
     

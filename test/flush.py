@@ -6,7 +6,7 @@ import numpy as np
 def random_flush():
     values = np.random.choice(Card.ACCEPTED_VALUE, size=5, replace=False)
     type = np.random.choice(Card.ACCEPTED_TYPE)
-    return [{'value': value, 'type': type} for value in values]
+    return [Card.Card(value, type) for value in values]
 
 class TestFlush(unittest.TestCase):
     def gen_test(self, result, expected):

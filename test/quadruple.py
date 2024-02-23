@@ -6,7 +6,7 @@ import numpy as np
 def random_quadruple():
     values = np.random.choice(Card.ACCEPTED_VALUE, size=2, replace=False)
     types = np.random.choice(Card.ACCEPTED_TYPE, size=2)
-    cards = [{'value': int(value), 'type': int(type)} for value, type in zip(values, types)]
+    cards = [Card.Card(int(value), int(type)) for value, type in zip(values, types)]
     
     card_chosen = np.random.choice(cards)
     

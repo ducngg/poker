@@ -6,7 +6,7 @@ import numpy as np
 def random_highest():
     values = np.random.choice(Card.ACCEPTED_VALUE, size=5, replace=False)
     types = np.random.choice(Card.ACCEPTED_TYPE, size=5)
-    return [{'value': value, 'type': type} for value, type in zip(values, types)]
+    return [Card.Card(int(value), int(type)) for value, type in zip(values, types)]
 
 class TestHighest(unittest.TestCase):
     def gen_test(self, result, expected):

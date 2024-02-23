@@ -1,7 +1,27 @@
 import numpy as np
 import random
+from itertools import combinations
 
 class Card:
+    """ 
+    This class defines functions and constants relevant to a standard deck of playing cards.
+    
+    Note: A `card` is represented as a dictionary with keys `'value'` and `'type'`, where 
+    `'value'` represents the card's rank and `'type'` represents its suit. This dictionary 
+    format is used throughout the program to represent cards.
+    
+    Accepted values for `'value'` are integers ranging from 1 to 13, where:
+        - 1 represents an Ace
+        - 11 represents a Jack
+        - 12 represents a Queen
+        - 13 represents a King
+    
+    Accepted values for `'type'` are integers representing different suits:
+        - 1: Spades
+        - 2: Clubs
+        - 3: Diamonds
+        - 4: Hearts
+    """
     A = 1
     J = 11
     Q = 12
@@ -31,6 +51,9 @@ class Card:
     
     @staticmethod 
     def v2v(v):
+        """
+        Value to value (number to string / string to number)
+        """
         if v == 'A':
             return 1
         if v == 'J':
@@ -55,6 +78,7 @@ class Card:
     
     @staticmethod 
     def t2t(t):
+        """Type to type (number to string / string to number)"""
         if t == '♠️':
             return Card.S
         if t == '♣️':
@@ -75,27 +99,32 @@ class Card:
     
     @staticmethod 
     def c2s(card):
+        """Card to string"""
         if (card['value'] not in Card.ACCEPTED_VALUE) or (card['type'] not in Card.ACCEPTED_TYPE):
             raise ValueError("Invalid card value or type")
         return Card.v2v(card['value']) + Card.t2t(card['type'])
     @staticmethod 
     def cs2ss(cards):
+        """Cards to strings"""
         return list(map(Card.c2s, cards))
     
     @staticmethod 
     def Card(value, type):
+        """Create a card object: `dict[str, int]`"""
         if (value not in Card.ACCEPTED_VALUE or type not in Card.ACCEPTED_TYPE):
             raise ValueError("Invalid card value or type")
         return {'value': value, 'type': type}
 
     @staticmethod 
     def sort(cards):
+        """Sort the cards in your hand(2, 3, 4, ..., 10, J, Q, K, A)."""
         sorted_cards = sorted(cards, key=lambda card: (card['value'], card['type']))
         aces = list(filter(lambda card: card['value'] == Card.A, sorted_cards))
         return Card.remaining(sorted_cards, aces) + aces
     
     @staticmethod
     def remaining(cards, takeout):
+        """Returns `remaining = cards - takeout`"""
         remaining_cards = []
         for card in cards:
             if card not in takeout:
@@ -104,13 +133,25 @@ class Card:
     
     @staticmethod 
     def highest(cards):
+        """
+        - A > K > Q > J > 10 > ... > 2
+        - Hearts > Diamonds > Clubs > Spades
+        """
         return Card.sort(cards)[-1]
     
     @staticmethod
     def compare(a, b):
-        if a['value'] > b['value'] or a['value'] == Card.A and b['value'] != Card.A:
+        """
+        - A > K > Q > J > 10 > ... > 2
+        - Hearts > Diamonds > Clubs > Spades
+        """
+        if (a['value'] == Card.A and b['value'] != Card.A):
             return 1
-        elif a['value'] < b['value'] or a['value'] != Card.A and b['value'] == Card.A:
+        elif (a['value'] != Card.A and b['value'] == Card.A):
+            return -1
+        elif a['value'] > b['value']:
+            return 1
+        elif a['value'] < b['value']:
             return -1
         else:
             if a['type'] > b['type']:
@@ -122,6 +163,10 @@ class Card:
     
     @staticmethod
     def greater(card1, card2):
+        """
+        - A > K > Q > J > 10 > ... > 2
+        - Hearts > Diamonds > Clubs > Spades
+        """
         if Card.compare(card1, card2) == 1:
             return True
         else:
@@ -129,6 +174,11 @@ class Card:
         
     @staticmethod
     def card_by_card_compare(cards1, cards2):
+        """
+        Compare card by card starting from the highest card of two card lists.
+        - A > K > Q > J > 10 > ... > 2
+        - Hearts > Diamonds > Clubs > Spades
+        """
         for card1, card2 in list(zip(Card.sort(cards1), Card.sort(cards2)))[::-1]:
             if Card.compare(card1, card2) == 1:
                 return 1
@@ -137,9 +187,18 @@ class Card:
         return 0        
 
 class Deck:
+    """
+    Create a deck object that serves as a deck, have the following methods: 
+    - `shuffle()`: create a random list of 52 cards to `self.deck`.
+    - `draw(n_cards)`: draw `n_cards` cards from the current `self.deck`.
+    """
     def __init__(self) -> None:
+        self.deck = []
+        self.shuffle()
+    def shuffle(self):
         self.deck = Card.shuffle()
     def draw(self, n_cards=1):
         cards = self.deck[:n_cards]
         self.deck = self.deck[n_cards:]
         return cards
+         
