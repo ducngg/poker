@@ -32,6 +32,6 @@ While the gameplay functionality is being developed, you can still simulate game
 python main.py
 ```
 
-![Poker Image](https://github.com/ducngg/poker/assets/main.png)
+![Poker Image](assets/main.png)
 
 This image showcases a sample poker hand in action.
