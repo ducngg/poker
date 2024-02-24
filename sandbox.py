@@ -4,6 +4,20 @@ from cards import Card, Deck
 from poker import Poker
 
 def print_possibilities(players, hands, shown, deck):
+    combinations = [
+        "", # index 0 is not used
+        "high card",
+        "one pair",
+        "two pair",
+        "three of a kind",
+        "straight",
+        "flush",
+        "fullhouse",
+        "four of a kind",
+        "straight flush",
+        "royal flush"
+    ]
+    
     possibilities = Poker.possibilities(hands, shown, deck)
     n_possibilities = len(possibilities)
     cases = [possibility[0] for possibility in possibilities]
@@ -14,7 +28,7 @@ def print_possibilities(players, hands, shown, deck):
     win_indexes = [w[1] for w in winners]
 
     for i in range(n_possibilities):
-        print(f"Case {Card.cs2ss(cases[i])}: Player {players[win_indexes[i]]} won! ({Card.cs2ss(winners[i][0])})")
+        print(f"Case {Card.cs2ss(cases[i])}: Player {players[win_indexes[i]]} won! ({Card.cs2ss(winners[i][0])}) - {combinations[Poker.check(winners[i][0])[2]]}")
 
     counts = [win_indexes.count(i) for i, _ in enumerate(hands)]
 
