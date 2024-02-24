@@ -3,68 +3,53 @@ from test import *
 from cards import Card, Deck
 from poker import Poker
 
-# hand1 = straight.random_straight()
-# hand2 = straight.random_straight()
+def print_possibilities(players, hands, shown, deck):
+    possibilities = Poker.possibilities(hands, shown, deck)
+    n_possibilities = len(possibilities)
+    cases = [possibility[0] for possibility in possibilities]
+    best_five_of_players_based_on_cases = [possibility[1] for possibility in possibilities]
 
-# hand1 = [{'value': 1, 'type': 4}, {'value': 2, 'type': 3}, {'value': 3, 'type': 2}, {'value': 4, 'type': 1}, {'value': 5, 'type': 2}]
-# hand2 = [{'value': 2, 'type': 4}, {'value': 3, 'type': 3}, {'value': 4, 'type': 2}, {'value': 5, 'type': 1}, {'value': 6, 'type': 2}]
+    # [([best_hand], index)]
+    winners = [Poker.best_hand(best_five_of_players) for best_five_of_players in best_five_of_players_based_on_cases]
+    win_indexes = [w[1] for w in winners]
 
-# A 2 3 4 5 is currently > 2 3 4 5 6
+    for i in range(n_possibilities):
+        print(f"Case {Card.cs2ss(cases[i])}: Player {players[win_indexes[i]]} won! ({Card.cs2ss(winners[i][0])})")
 
-# print(Poker.compare(hand1, hand2))
+    counts = [win_indexes.count(i) for i, _ in enumerate(hands)]
 
-# experiment_game = game.Game()
-# experiment_game.simulate()
-
-
-# Players' cards: [['8♥️', '10♥️'], ['7♥️', '9♦️'], ['4♥️', 'K♦️'], ['4♣️', '4♦️']]
-
-
-#         Community cards['Q♠️', 'Q♥️', '7♦️']
-# Players' winning probs: [0.2804878048780488, 0.5365853658536586, 0.13902439024390245, 0.04390243902439024]
+    for i in range(len(hands)):
+        print(f"{players[i]} winning chance: {counts[i]}/{n_possibilities}")
 
 
-#         Community cards['Q♠️', 'Q♥️', '7♦️', 'J♣️']
-# Players' winning probs: [0.225, 0.6, 0.15, 0.025]
-
-
-#         Community cards['Q♠️', 'Q♥️', '7♦️', 'J♣️', 'A♣️']
-# Players' winning probs: [0.0, 1.0, 0.0, 0.0]
+N = 4
 
 deck = Deck()
-deck.deck = Card.FULL
 
-hands = [['8♥️', '10♥️'], ['7♥️', '9♦️'], ['4♥️', 'K♦️'], ['4♣️', '4♦️']]
-hands = [Card.ss2cs(cards) for cards in hands]
+players = [f"P{i}" for i in range(N)]
+hands = [deck.draw(2) for _ in players]
 
-for hand in hands:
-    deck.deck = Card.remaining(deck.deck, hand)
+print(players)
+print(hands)
+print([Card.cs2ss(hand) for hand in hands])
 
-shown = Card.ss2cs(['Q♠️', 'Q♥️', '7♦️'])
-deck.deck = Card.remaining(deck.deck, shown)
+print('\n--------------------------------------------------------\n')
 
-print(len(deck.deck))
+shown = deck.draw(3)
+print(Card.cs2ss(shown))
+print_possibilities(players, hands, shown, deck.deck)
 print(Poker.probabilities(hands, shown, deck.deck))
 
-shown = Card.ss2cs(['Q♠️', 'Q♥️', '7♦️', 'J♣️'])
-deck.deck = Card.remaining(deck.deck, shown)
+print('\n--------------------------------------------------------\n')
 
-print(len(deck.deck))
+shown += deck.draw(1)
+print(Card.cs2ss(shown))
+print_possibilities(players, hands, shown, deck.deck)
 print(Poker.probabilities(hands, shown, deck.deck))
 
-for card in deck.deck:
-    
-    shown_after_choose = shown + [card]
-    deck_after_choose = Card.remaining(deck.deck, shown_after_choose)
-    print(Card.c2s(card), Poker.probabilities(hands, shown_after_choose, deck_after_choose))
-    print([Card.cs2ss(Poker.best_five(hand+shown_after_choose)) for hand in hands])
+print('\n--------------------------------------------------------\n')
 
-
-
-# shown = Card.ss2cs(['9♦️', '3♣️', 'J♣️', '9♠️', 'A♣️'])
-# deck.deck = Card.remaining(deck.deck, shown)
-
-print(len(deck.deck))
+shown += deck.draw(1)
+print(Card.cs2ss(shown))
+print_possibilities(players, hands, shown, deck.deck)
 print(Poker.probabilities(hands, shown, deck.deck))
-
-print([Card.cs2ss(Poker.best_five(hand+shown)) for hand in hands])

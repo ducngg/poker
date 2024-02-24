@@ -357,11 +357,16 @@ class Poker:
     @staticmethod
     def next_possible_cards_combination(deck, number_of_cards=1):
         return list(combinations(deck, number_of_cards))
-        
+    
     @staticmethod
-    def probabilities(hands, shown, deck):
+    def possibilities(hands, shown, deck):
         """
-        Calculate probability of winning for each hand in `hands`. 
+        Give all the possibilities based on hands, community cards(shown) and the remaining in deck. 
+        
+        `return [([next_cards_case_1], [[hand_1], [hand_2], ...]), ([next_cards_case_2], [[hand_1], [hand_2], ...]), ...]` 
+        
+        - `next_cards_case_i` is the list of one or two cards that may appear.
+        - `hand_1`, `hand_2`, `...` are the players' final combination based on their hand, community cards, and the `next_cards_case_i`.
         """
         if len(shown) == 3:
             next_combinations = Poker.next_possible_cards_combination(deck, 2)
@@ -370,30 +375,41 @@ class Poker:
         elif len(shown) == 5:
             next_combinations = [[]]
         else:
-            return []
+            return None
         
         # [[seven1, seven2, ...], [seven1, seven2, ...], ...]
         sevens_of_hands = [
             [hand + shown + list(next_combination) for next_combination in next_combinations] 
             for hand in hands
         ]
-                
+                        
         # [[five1, five2, ...], [five1, five2, ...], ...]
-        bests_of_hands = [
+        best_fives_of_hands = [
             [Poker.best_five(seven) for seven in sevens] 
             for sevens in sevens_of_hands
         ]
         
-        # [[five1, five1, ...], [five2, five2, ...], ...]
-        hands_possibilities = [[best[case] for best in bests_of_hands] for case in range(len(next_combinations))]
+        # [(next_combination1, [five1, five1, ...]), (next_combination1, [five2, five2, ...]), ...]
+        hands_possibilities = [(list(combination_case), [best_five_of_hands[idx] for best_five_of_hands in best_fives_of_hands]) for idx, combination_case in enumerate(next_combinations)]
         
-        # [[best_hand_of_fives1, index],[best_hand_of_fives2, index], ...]
-        results = [Poker.best_hand(hands_possibility) for hands_possibility in hands_possibilities]
+        return hands_possibilities
+        
+        
+    @staticmethod
+    def probabilities(hands, shown, deck):
+        """
+        Calculate probability of winning for each hand in `hands`. 
+        """
+        # [(next_combination1, [five1, five1, ...]), (next_combination1, [five2, five2, ...]), ...]
+        hands_possibilities = Poker.possibilities(hands, shown, deck)
+        
+        # [(best_hand_of_fives1, index),(best_hand_of_fives2, index), ...]
+        results = [Poker.best_hand(hands_possibility[1]) for hands_possibility in hands_possibilities]
         win_indexes = [result[1] for result in results]
 
         counts = [win_indexes.count(i) for i, _ in enumerate(hands)]
         
-        probs = [count/len(next_combinations) for count in counts]
+        probs = [count/len(hands_possibilities) for count in counts]
         
         return probs
             
