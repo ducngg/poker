@@ -14,6 +14,17 @@ class Poker:
     - best_hand(hands): Determine the best hand among multiple hands.
     - probabilities(hands, shown, deck): Calculate winning probabilities of the hands based on the hands and shown cards.
     """
+    
+    HIGH_CARD = 1
+    ONE_PAIR = 2
+    TWO_PAIRS = 3
+    THREE_OF_A_KIND = 4
+    STRAIGHT = 5
+    FLUSH = 6
+    FULL_HOUSE = 7
+    HOUR_OF_A_KIND = 8
+    STRAIGHT_FLUSH = 9
+    ROYAL_FLUSH = 10
         
     @staticmethod
     def highest(cards: list):
@@ -114,7 +125,7 @@ class Poker:
         
     @staticmethod
     def fullhouse(cards: list):
-        if Poker.triple(cards)[0] and Poker.twopairs(cards)[0]:
+        if Poker.triple(cards)[0] and Poker.onepair(cards)[0]:
             return cards, []
         else:
             return [], cards
@@ -193,6 +204,68 @@ class Poker:
                 
         return final_in_cards, final_out_cards, final_code
     
+    def compare_straight(in1: list, in2: list):
+        # If the inputs are not straight -> return 0
+        if not Poker.straight(in1)[0] or not Poker.straight(in2)[0]:
+            return 0
+        
+        # If 2 3 4 5 A -> A 2 3 4 5
+        if Card.contains(in1, Card.A) and Card.contains(in1, 2):
+            in1 = [in1[-1]] + in1[:-1]
+        if Card.contains(in2, Card.A) and Card.contains(in2, 2):
+            in2 = [in2[-1]] + in2[:-1]
+        
+        return Card.card_by_card_compare(in1, in2, sort=False)
+    
+    def compare_two_pairs(in1: list, in2: list):
+        # If the inputs are not two pairs -> return 0
+        if not Poker.twopairs(in1)[0] or not Poker.twopairs(in2)[0]:
+            return 0
+        
+        value_low_pair_in1 = in1[0]['value']
+        value_high_pair_in1 = in1[2]['value']
+        value_low_pair_in2 = in2[0]['value']
+        value_high_pair_in2 = in2[2]['value']
+        
+        if Card.compare_value(value_high_pair_in1, value_high_pair_in2) == 1:
+            return 1
+        elif Card.compare_value(value_high_pair_in1, value_high_pair_in2) == -1:
+            return -1
+        
+        if Card.compare_value(value_low_pair_in1, value_low_pair_in2) == 1:
+            return 1
+        elif Card.compare_value(value_low_pair_in1, value_low_pair_in2) == -1:
+            return -1
+        
+        return Card.card_by_card_compare(in1, in2, sort=False)
+    
+    def compare_fullhouse(in1: list, in2: list):
+        # If the inputs are not fullhouse -> return 0
+        if not Poker.fullhouse(in1)[0] or not Poker.fullhouse(in2)[0]:
+            return 0
+        
+        triple_in1 = Poker.triple(in1)[0]
+        pair_in1 = Poker.onepair(in1)[0]
+        triple_in2 = Poker.triple(in2)[0]
+        pair_in2 = Poker.onepair(in2)[0]
+        
+        value_triple_in1 = triple_in1[0]['value']
+        value_pair_in1 = pair_in1[0]['value']
+        value_triple_in2 = triple_in2[0]['value']
+        value_pair_in2 = pair_in2[0]['value']
+                
+        if Card.compare_value(value_triple_in1, value_triple_in2) == 1:
+            return 1
+        elif Card.compare_value(value_triple_in1, value_triple_in2) == -1:
+            return -1
+        
+        if Card.compare_value(value_pair_in1, value_pair_in2) == 1:
+            return 1
+        elif Card.compare_value(value_pair_in1, value_pair_in2) == -1:
+            return -1
+        
+        return Card.card_by_card_compare(pair_in1+triple_in1, pair_in2+triple_in2, sort=False)
+        
     @staticmethod
     def compare(hand1: list, hand2: list):
         """
@@ -226,24 +299,38 @@ class Poker:
             return 3, ([code1, in1, out1], [code2, in2, out2])
         elif code1 < code2:
             return -3, ([code1, in1, out1], [code2, in2, out2])
+
+        # Level 2 winning: combination type is the same, cards in combination type are better
+        ## Check for specific code first
+        if code1 in [Poker.STRAIGHT, Poker.STRAIGHT_FLUSH, Poker.ROYAL_FLUSH]:
+            if Poker.compare_straight(in1, in2) == 1:
+                return 2, ([code1, in1, out1], [code2, in2, out2])
+            elif Poker.compare_straight(in1, in2) == -1:
+                return -2, ([code1, in1, out1], [code2, in2, out2])
+        elif code1 in [Poker.TWO_PAIRS]:
+            if Poker.compare_two_pairs(in1, in2) == 1:
+                return 2, ([code1, in1, out1], [code2, in2, out2])
+            elif Poker.compare_two_pairs(in1, in2) == -1:
+                return -2, ([code1, in1, out1], [code2, in2, out2])
+        elif code1 in [Poker.FULL_HOUSE]:
+            if Poker.compare_fullhouse(in1, in2) == 1:
+                return 2, ([code1, in1, out1], [code2, in2, out2])
+            elif Poker.compare_fullhouse(in1, in2) == -1:
+                return -2, ([code1, in1, out1], [code2, in2, out2])
+        ## Other codes: use card by card comparison
         else:
-            # Level 2 winning: combination type is the same, cards in combination type are better
-            '''
-            Currently compare card by card.
-            Working on implementing comparing method for each combination.
-            '''
             if Card.card_by_card_compare(in1, in2) == 1:
-                return 1, ([code1, in1, out1], [code2, in2, out2])
+                return 2, ([code1, in1, out1], [code2, in2, out2])
             elif Card.card_by_card_compare(in1, in2) == -1:
-                return -1, ([code1, in1, out1], [code2, in2, out2])
-            else:
-                # Level 1 winning: combination type is the same, highest card in combination type is the same, remaining cards is better
-                if Card.card_by_card_compare(out1, out2) == 1:
-                    return 1, ([code1, in1, out1], [code2, in2, out2])
-                elif Card.card_by_card_compare(out1, out2) == -1:
-                    return -1, ([code1, in1, out1], [code2, in2, out2])
-                else:
-                    return 0, ([code1, in1, out1], [code2, in2, out2])
+                return -2, ([code1, in1, out1], [code2, in2, out2])
+            
+        # Level 1 winning: combination type is the same, highest card in combination type is the same, remaining cards is better
+        if Card.card_by_card_compare(out1, out2) == 1:
+            return 1, ([code1, in1, out1], [code2, in2, out2])
+        elif Card.card_by_card_compare(out1, out2) == -1:
+            return -1, ([code1, in1, out1], [code2, in2, out2])
+        else:
+            return 0, ([code1, in1, out1], [code2, in2, out2])
     
     @staticmethod
     def best_hand(hands: list):

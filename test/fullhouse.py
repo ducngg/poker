@@ -41,7 +41,7 @@ class TestFullhouse(unittest.TestCase):
         for i in range(N):
             cards = Card.sort(random_fullhouse())
             
-            if Poker.triple(cards)[0] and Poker.twopairs(cards)[0]:
+            if Poker.triple(cards)[0] and Poker.onepair(cards)[0]:
                 in_out = cards, []
             else:
                 in_out = [], cards

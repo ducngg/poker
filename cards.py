@@ -103,10 +103,21 @@ class Card:
         if (card['value'] not in Card.ACCEPTED_VALUE) or (card['type'] not in Card.ACCEPTED_TYPE):
             raise ValueError("Invalid card value or type")
         return Card.v2v(card['value']) + Card.t2t(card['type'])
+    
+    @staticmethod 
+    def s2c(s):
+        """String to card (card emoji is the last 2 characters)"""
+        return Card.Card(Card.v2v(s[:-2]), Card.t2t(s[-2:]))
+    
     @staticmethod 
     def cs2ss(cards):
         """Cards to strings"""
         return list(map(Card.c2s, cards))
+
+    @staticmethod 
+    def ss2cs(ss):
+        """Cards to strings"""
+        return list(map(Card.s2c, ss))
     
     @staticmethod 
     def Card(value, type):
@@ -160,6 +171,10 @@ class Card:
                 return -1
             else:
                 return 0
+            
+    @staticmethod
+    def compare_value(v1, v2):
+        return Card.compare(Card.Card(v1, Card.SPADES), Card.Card(v2, Card.SPADES))
     
     @staticmethod
     def greater(card1, card2):
@@ -173,18 +188,34 @@ class Card:
             return False
         
     @staticmethod
-    def card_by_card_compare(cards1, cards2):
+    def card_by_card_compare(cards1, cards2, sort=True):
         """
         Compare card by card starting from the highest card of two card lists.
         - A > K > Q > J > 10 > ... > 2
         - Hearts > Diamonds > Clubs > Spades
         """
-        for card1, card2 in list(zip(Card.sort(cards1), Card.sort(cards2)))[::-1]:
+        if sort:
+            zipper = list(zip(Card.sort(cards1), Card.sort(cards2)))
+        else:
+            zipper = list(zip(cards1, cards2))
+            
+        for card1, card2 in zipper[::-1]:
             if Card.compare(card1, card2) == 1:
                 return 1
             elif Card.compare(card1, card2) == -1:
                 return -1
         return 0        
+    
+    @staticmethod
+    def contains(cards, value, type=0):
+        """
+        Returns True if there is a card with value equal to the provided value in the cards list, optionally specifying the type. Otherwise, returns False.
+        """
+        if value and not type:
+            return any([card['value'] == value for card in cards])
+        else:
+            return any([card['value'] == value and card['type'] == type for card in cards])
+
 
 class Deck:
     """
